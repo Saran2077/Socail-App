@@ -4,16 +4,18 @@ import { CgMoreO } from "react-icons/cg";
 import { VStack, Flex, Box, Avatar, Text, Link, MenuButton, Menu, MenuItem, MenuList, Button, useToast } from '@chakra-ui/react'
 
 const UserHeader = () => {
+//   const { ToastContainer } = createStandaloneToast();
+
+  const toast = useToast()
   const copyUrl = () => {
+    console.log("Toast")
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl);
-
-    const toast = useToast()
     toast({
         title: "Copied to clipboard",
-        description: "h",
         status: "success",
-        duration: 5000,
+        position: "bottom",
+        duration: 2000,
         isClosable: true
     })
   }
@@ -56,10 +58,18 @@ const UserHeader = () => {
                             <CgMoreO size={24} cursor={"pointer"}/>
                         </MenuButton>
                         <MenuList bg={"gray.dark"}>
-                            <MenuItem bg={"gray.dark"} onClick={copyUrl}>Copy Link</MenuItem>
+                            <MenuItem bg={"gray.dark"} onClick={ copyUrl }>Copy Link</MenuItem>
                         </MenuList>
                     </Menu>
                 </Box>
+            </Flex>
+        </Flex>
+        <Flex w="full" justifyContent={"space-between"}>
+            <Flex pb="3" borderBottom="1.5px solid white" cursor="pointer" flex="1" justifyContent={"center"}>
+            <Text fontWeight={"bold"}>Threads</Text> 
+            </Flex>
+            <Flex pb="3" borderBottom="1px solid gray" color={"gray.light"} cursor={"pointer"} flex="1" justifyContent={"center"}>
+                <Text fontWeight={"bold"}>Replies</Text>
             </Flex>
         </Flex>
     </VStack>
