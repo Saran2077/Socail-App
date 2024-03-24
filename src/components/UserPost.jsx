@@ -1,15 +1,19 @@
-import { Avatar, Box, Flex, Image, Stack, Text } from '@chakra-ui/react'
+import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text } from '@chakra-ui/react'
 import { React, useState } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import { Link } from 'react-router-dom'
 import Actions from './Actions'
 
-const UserPost = () => {
+const UserPost = ({ postImage, postTitle, likes, replies }) => {
   const [liked, setLiked] = useState(false)
+  const handleDownload = () => {
+    console.log("Downloading")
+    window.location.href = postImage 
+  }
 
   return (
-    <Link>
-        <Flex mt="5" gap={4}>
+    <Link to={"posts/id"}>
+        <Flex mt="10" gap={4}>
             <Stack alignItems={"center"}>
                 <Image 
                 src='/zuck-avatar.png'
@@ -38,7 +42,6 @@ const UserPost = () => {
                         src="/zuck-avatar.png"
                         position={"absolute"}
                         bottom={0}
-                        // left={"4px"}
                         size={"xs"}
                         padding={"2px"}
                     />
@@ -49,25 +52,42 @@ const UserPost = () => {
                     <Text fontWeight={"bold"} fontSize={"xs"}>Saran</Text>
                     <Flex gap={4} alignContent={"center"}>
                         <Text color={"gray.light"} fontSize={"xs"}>1d</Text>
-                        <BsThreeDots />
+                        <Menu>
+                            <MenuButton>
+                                <BsThreeDots />
+                            </MenuButton>
+                            <MenuList bg={"gray.dark"}>
+                                <MenuItem bg={"gray.dark"} onClick={() => handleDownload(postImage)}>Download</MenuItem>
+                                <MenuItem bg={"gray.dark"}>Copy</MenuItem>
+                            </MenuList>
+                        </Menu>
                     </Flex>
                 </Flex>
                 <Flex flexDirection={"column"} gap={4}>
                     <Text fontSize={"xs"}>
-                        This is my first post
+                        {postTitle}
                     </Text>
-                    <Image 
-                        src='/post1.png'
+                    {postImage && <Image 
+                        src={ postImage }
                         borderRadius={"10"}
                         border={"1px solid"}
                         borderColor={"gray.light"}
-                    />
+                    />}
 
                 </Flex>
                 <Actions 
                     liked={ liked } 
                     setLiked={ setLiked }
                 />
+                <Flex gap={2} alignItems={"center"}>
+                <Text color={"gray.light"} fontSize="sm">
+                    {replies}{replies <= 1 ? " reply" : " replies"}
+                </Text>
+                <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
+                <Text color={"gray.light"} fontSize="sm">
+                    {likes}{likes <= 1 ? " like" : " likes"}
+                </Text>
+            </Flex>
             </Flex>
         </Flex>
     </Link>

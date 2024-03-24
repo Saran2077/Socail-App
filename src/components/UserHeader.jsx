@@ -4,7 +4,6 @@ import { CgMoreO } from "react-icons/cg";
 import { VStack, Flex, Box, Avatar, Text, Link, MenuButton, Menu, MenuItem, MenuList, Button, useToast } from '@chakra-ui/react'
 
 const UserHeader = () => {
-//   const { ToastContainer } = createStandaloneToast();
 
   const toast = useToast()
   const copyUrl = () => {
@@ -23,10 +22,23 @@ const UserHeader = () => {
     <VStack gap={4} alignItems={"start"}>
         <Flex justifyContent={"space-between"} w="full">
             <Box>
-                <Text fontSize={"2xl"} fontWeight={"bold"}>Saran</Text>
+                <Text fontSize={
+                    {
+                        base: "md",
+                        md: "xl"
+                    }
+                } fontWeight={"bold"}>Saran</Text>
                 <Flex alignItems={"center"} gap={"2"}>
-                    <Text fontSize={"sm"}>Saran_2077</Text>
-                    <Text fontSize={"xs"} bg={"gray.dark"} color={"gray.light"} borderRadius={"full"} padding={1}>threads.net</Text>
+                    <Text fontSize={
+                        {
+                            base: "xs",
+                            md: "sm"
+                        }
+                    }>Saran_2077</Text>
+                    <Text fontSize={{
+                        base: "xs",
+                        md: "sm"
+                    }} bg={"gray.dark"} color={"gray.light"} borderRadius={"full"} padding={1}>threads.net</Text>
                 </Flex>
             </Box>
             
@@ -34,12 +46,20 @@ const UserHeader = () => {
                 <Avatar 
                     name="Saran"
                     src="/zuck-avatar.png"
-                    size={"xl"}
+                    size={{
+                        base: "md",
+                        md: "xl"
+                    }}
                 />
             </Box>
 
         </Flex>
-        <Text>Competitive Programmer, Web Developer</Text>
+        <Text fontSize={
+            {
+                base: "sm",
+                md: "md"
+            }
+        }>Competitive Programmer, Web Developer</Text>
         <Flex w="full" justifyContent={"space-between"}>
             <Flex gap={2} alignItems={"center"}>
                 <Text color={"gray.light"}>

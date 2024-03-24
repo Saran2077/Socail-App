@@ -2,7 +2,7 @@ import { Flex } from '@chakra-ui/react'
 
 const Actions = ({ liked, setLiked }) => {
   return (
-    <Flex gap={2} alignItems={"center"} my={2}>
+    <Flex gap={2} alignItems={"center"} my={2} onClick={(e) => e.preventDefault()}>
       <svg
 					aria-label='Like'
 					color={liked ? "rgb(237, 73, 86)" : ""}
