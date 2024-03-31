@@ -1,34 +1,36 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import UserHeader from '../components/UserHeader'
-import UserPost from '../components/UserPost'
+import Post from '../components/Post.jsx'
+import { useParams } from 'react-router-dom'
+import useShowToast from "./../hooks/useShowToast.js"
 
 const UserPage = () => {
+  const[user, setUser] = useState(null)
+  const[posts, setPosts] = useState(null)
+  const { username } = useParams()
+  const showToast = useShowToast()
+
+  useEffect(() => {
+    const getUser = async() => {
+      try {
+        const res = await fetch(`/api/users/getUserProfile/${username}`)
+        const data = await res.json()
+        if(data.error) {
+          showToast("", data.error, "error")
+          return
+        }
+        setUser(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getUser()
+  }, [username, showToast])
+
+
   return (
     <>
-        <UserHeader />
-        <UserPost 
-          postImage={'/post1.png'}
-          postTitle={"This is my first post"}
-          likes={400}
-          replies={1}
-        />
-        <UserPost 
-          postImage={'/post2.png'}
-          postTitle={"This is my second post"}
-          likes={50}
-          replies={10}
-        />
-        <UserPost 
-          postImage={'/post3.png'}
-          postTitle={"Elon Musk"}
-          likes={1500}
-          replies={108}
-        />
-        <UserPost 
-          postTitle={"This is my second post"}
-          likes={450}
-          replies={95}
-        />
+        {user && <UserHeader user={ user }/>}
     </>
   )
 }
