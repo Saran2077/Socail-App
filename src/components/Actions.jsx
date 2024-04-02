@@ -7,7 +7,8 @@ import useShowToast from '../hooks/useShowToast';
 const Actions = ({ feed:feed_ }) => {
   const currentUser = useRecoilValue(userAtom)
   const[feed, setFeed] = useState(feed_)
-  const[liked, setLiked] = useState(feed.likes.includes(currentUser.id))
+  const[isLoading, setIsLoading] = useState(false)
+  const[liked, setLiked] = useState(feed?.likes.includes(currentUser.id))
   const showToast = useShowToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const[reply, setReply] = useState("")
@@ -15,6 +16,7 @@ const Actions = ({ feed:feed_ }) => {
   const handleReply = async() => {
 	if(!currentUser) return showToast("", "Login to post comments", "error")
     if (reply === "") return showToast("", "Enter a comment to post", "error")
+	setIsLoading(true)
 	try {
 		const res = await fetch("/api/posts/reply/"+feed._id, {
 			method: "POST",
@@ -25,8 +27,19 @@ const Actions = ({ feed:feed_ }) => {
                 text: reply
             })
 		})
+		const data = await res.json()
+		if (data.error) {
+			showToast("", data.error, "error")
+			return 
+		}
+		setFeed({...feed, replies: [...feed.replies, data]})
+		showToast("", data.message, "success")
+		setReply("")
+		onClose()
 	} catch (error) {
 		console.log(error)
+	} finally {
+		setIsLoading(false)
 	}
   }
 
@@ -41,10 +54,10 @@ const Actions = ({ feed:feed_ }) => {
 			return
 		}
 		if(liked) {
-			setFeed({...feed, likes:feed.likes.filter((id) => id != currentUser.id)})
+			setFeed({...feed, likes:feed?.likes.filter((id) => id != currentUser.id)})
 		}
 		else{ 
-			setFeed({...feed, likes:[...feed.likes, currentUser.id]})
+			setFeed({...feed, likes:[...feed?.likes, currentUser.id]})
 		}
 		setLiked(!liked)
 		showToast("", data.message, "success")
@@ -109,18 +122,18 @@ const Actions = ({ feed:feed_ }) => {
 				</ModalBody>
 				<ModalFooter>
 					<Flex>
-						<Button borderRadius={20} >Post</Button>
+						<Button borderRadius={20} isLoading={isLoading} onClick={handleReply} >Post</Button>
 					</Flex>
 				</ModalFooter>
 			</ModalContent>
 		</Modal>
 		<Flex gap={2} alignItems={"center"}>
                 <Text color={"gray.light"} fontSize="sm">
-                    {feed.likes.length}{feed.likes.length <= 1 ? " like" : " likes"}
+                    {feed?.likes.length}{feed?.likes.length <= 1 ? " like" : " likes"}
                 </Text>
                 <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
                 <Text color={"gray.light"} fontSize="sm">
-                    {feed.replies.length}{feed.replies.length <= 1 ? " reply" : " replies"}
+                    {feed?.replies.length}{feed?.replies.length <= 1 ? " reply" : " replies"}
                 </Text>
             </Flex>
 	</Flex>

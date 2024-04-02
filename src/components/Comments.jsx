@@ -2,23 +2,23 @@ import { Avatar, Divider, Flex, Text } from "@chakra-ui/react"
 import { BsThreeDots } from 'react-icons/bs'
 import Actions from "./Actions"
 
-const Comments = ({ userAvatar, username, comment, created, likes}) => {
+const Comments = ({ reply }) => {
   return (
     <>
       <Flex gap={3}>
         <Avatar 
-        name={username}
-        src={userAvatar}
+        name={reply?.username}
+        src={reply?.prefilePic}
         />
           <Flex flexDirection={"column"} gap={3} w="full" justifyContent={"space-between"}>
               <Flex justifyContent={"space-between"} alignItems={"center"}>
-                <Text fontSize={"sm"} fontWeight={"bold"}>Saran2077</Text>
+                <Text fontSize={"sm"} fontWeight={"bold"}>{reply?.username}</Text>
                 <Flex alignItems={"center"} gap={3}>
-                  <Text fontSize={"xs"} color="gray.light">{ created }</Text>
+                  <Text fontSize={"xs"} color="gray.light">{ reply?.created }</Text>
                   <BsThreeDots />
                 </Flex>
               </Flex>
-              <Text>{ comment }</Text>
+              <Text>{ reply?.text }</Text>
               <Actions />
           </Flex>
       </Flex>

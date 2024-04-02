@@ -14,7 +14,7 @@ const PostPage = () => {
   useEffect(() => {
     const getPost = async() => {
       try {
-        const res = await fetch("api/posts/"+pid)
+        const res = await fetch("/api/posts/"+pid)
         const data = await res.json()
         if (data.error) {
           return showToast("", data.error, "error")
@@ -70,7 +70,7 @@ const PostPage = () => {
           src={ post?.img }
         />
       </Box>
-      <Actions />
+      <Actions feed={post}/>
       <Flex gap={2} alignItems={"center"}>
                 <Text color={"gray.light"} fontSize="sm">
                     {post?.replies.length}{post?.replies.length <= 1 ? " reply" : " replies"}
@@ -82,20 +82,9 @@ const PostPage = () => {
             </Flex>
       
       <Divider />
-      <Comments
-        userAvatar="Saran2077"
-        username="https://bit.ly/kent-c-dodds"
-        comment="Hey Nice man"
-        created="1d"
-        likes={100}
-      />
-      <Comments
-        userAvatar="Saran2077"
-        username="https://bit.ly/kent-c-dodds"
-        comment="Hey Nice man"
-        created="1d"
-        likes={100}
-      />
+      {post?.replies.map((reply) => (
+        <Comments reply={reply} />
+      ))}
     </Flex>
   )
 }

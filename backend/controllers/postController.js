@@ -33,12 +33,12 @@ const getPost = async(req, res) => {
     try {
         const post = await Post.findById(postId)
         if(!post) {
-            return res.status(404).json({ message: "Post not found" })
+            return res.status(404).json({ error: "Post not found" })
         }
         res.status(200).json(post)
     }
     catch (error) {
-        res.status(401).json({ message: error.message });
+        res.status(401).json({ error: error.message });
         console.log(`Error: ${error.message}`)
     }
 }
