@@ -1,20 +1,27 @@
 import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text } from '@chakra-ui/react'
 import { React, useEffect, useState } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Actions from './Actions'
 import useShowToast from '../hooks/useShowToast'
+import { formatDistanceToNow } from "date-fns"
+
 
 const UserPost = ({ feed }) => {
-  console.log(feed.text)
   const [liked, setLiked] = useState(false)
   const handleDownload = () => {
-    console.log("Downloading")
     window.location.href = feed.img 
   }
   const[user, setUser] = useState(null)
   const userId = feed.postedBy 
   const showToast = useShowToast()
+  const navigate = useNavigate()
+
+  const handleRedirect = (e) => {
+    e.preventDefault()
+    navigate(`/${user.username}`)
+  }
+
   useEffect(() => {
     const getUser = async() => {
         try {
@@ -31,48 +38,52 @@ const UserPost = ({ feed }) => {
     }
     getUser()
   }, [userId])
+  
   return (
-    <Link to={"posts/id"}>
+    <Link to={`/${user?.username}/posts/${feed?._id}`}>
         <Flex mt="10" gap={4}>
             <Stack alignItems={"center"}>
-                <Image 
+                <Avatar 
                 src={user && user.profilePic}
-                w="10"
-                borderRadius={"50%"}
+                name={user?.name}
+                onClick={handleRedirect}
                 />
                 <Box h="full" borderRadius={"10"} w="1px" bg="gray.light" my="2px"></Box>
                 <Box w="fullxs" position={"relative"}>
-                    <Avatar 
-                        src={user && user.profilePic}
-                        name={user && user.name}
+                    {feed.replies.length === 0 && <Text align={"center"}>🥱</Text>}
+                    {feed.replies[0] && (<Avatar 
+                        src={ feed.replies[0].profilePic}
+                        name={feed.replies[0].name}
                         position={"absolute"}
                         top={"-2px"}
                         left={"-8px"}
                         size={"xs"}
                         padding={"2px"}
-                        />
-                    <Avatar 
-                        src="/zuck-avatar.png"
+                        />)}
+                    {feed.replies[1] && (<Avatar 
+                        src={feed.replies[1].profilePic}
+                        name={feed.replies[1].name}
                         position={"absolute"}
                         bottom={0}
                         right={"0px"}
                         size={"xs"}
                         padding={"2px"}
-                        />
-                    <Avatar 
-                        src="/zuck-avatar.png"
+                        />)}
+                    {feed.replies[2] && (<Avatar 
+                        src={feed.replies[2].profilePic}
+                        name={feed.replies[2].name}
                         position={"absolute"}
                         bottom={0}
                         size={"xs"}
                         padding={"2px"}
-                    />
+                    />)}
                 </Box>
             </Stack>
             <Flex w="full" flexDirection={"column"} gap={2}>
                 <Flex w="full" justifyContent={"space-between"}>
-                    <Text fontWeight={"bold"} fontSize={"xs"}>{ user && user.username }</Text>
+                    <Text fontWeight={"bold"} onClick={handleRedirect} fontSize={"xs"}>{ user && user.username }</Text>
                     <Flex gap={4} alignContent={"center"}>
-                        <Text color={"gray.light"} fontSize={"xs"}>1d</Text>
+                        <Text color={"gray.light"} fontSize={"xs"}>{formatDistanceToNow(new Date(feed.createdAt))} ago</Text>
                         <Menu>
                             <MenuButton>
                                 <BsThreeDots />
@@ -88,27 +99,19 @@ const UserPost = ({ feed }) => {
                     <Text fontSize={"xs"}>
                         { feed.text }
                     </Text>
-                    {feed.img && <Image 
-                        src={ feed.img || null }
-                        borderRadius={"10"}
-                        border={"1px solid"}
-                        borderColor={"gray.light"}
-                    />}
+                    {feed.img && (
+                        <Image 
+                            src={ feed.img || null }
+                            borderRadius={"10"}
+                            border={"1px solid"}
+                            borderColor={"gray.light"}
+                        />)}
 
                 </Flex>
                 <Actions 
-                    liked={ liked } 
-                    setLiked={ setLiked }
+                    feed={feed}
                 />
-                <Flex gap={2} alignItems={"center"}>
-                <Text color={"gray.light"} fontSize="sm">
-                    {feed.likes.length}{feed.likes.length <= 1 ? " like" : " likes"}
-                </Text>
-                <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
-                <Text color={"gray.light"} fontSize="sm">
-                    {feed.replies.length}{feed.replies.length <= 1 ? " reply" : " replies"}
-                </Text>
-            </Flex>
+                
             </Flex>
         </Flex>
     </Link>

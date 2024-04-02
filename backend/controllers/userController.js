@@ -27,14 +27,14 @@ const signUpUser = async(req, res) => {
         if (newUser) {
             generateTokenAndSetCookie(newUser._id, res)
             res.status(201).json({
-                id: userData._id,
-                name: userData.name,
-                username: userData.username,
-                profilePic: userData.profilePic,
-                bio: userData.bio,
-                email: userData.email,
-                following: userData.following,
-                followers: userData.followers,
+                id: newUser._id,
+                name: newUser.name,
+                username: newUser.username,
+                profilePic: newUser.profilePic,
+                bio: newUser.bio,
+                email: newUser.email,
+                following: newUser.following,
+                followers: newUser.followers,
             })
         }
         else {

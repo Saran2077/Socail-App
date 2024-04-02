@@ -36,8 +36,8 @@ const UserHeader = ({ user }) => {
             showToast("", data.error, "error")
             return
         }
-        updatedUser.followers = following ? user.following.filter(id => id !== user._id)
-        : [...user.following, user._id];
+        updatedUser.following = following ? updatedUser.following.filter(id => id !== user._id)
+        : [...updatedUser.following, user._id];
         following ? user.followers.pop() : user.followers.push(currentUser.id)
         localStorage.setItem("user-info", JSON.stringify(updatedUser))
         setCurrentUser(updatedUser)

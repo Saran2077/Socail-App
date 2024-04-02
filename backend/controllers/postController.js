@@ -1,4 +1,5 @@
 import Post from "../modals/postModel.js"
+import User from "../modals/userModel.js"
 import {v2 as  cloudinary}  from 'cloudinary'
 
 const createPost = async(req, res) => {
@@ -75,7 +76,7 @@ const likeUnlikePost = async(req, res) => {
         const post = await Post.findById(postId)
 
         if(!post) {
-            res.status(404).json({ message: "Post not found" })
+            res.status(404).json({ error: "Post not found" })
         }
 
         const isLiked = post.likes.includes(userId);
@@ -90,7 +91,7 @@ const likeUnlikePost = async(req, res) => {
         res.status(200).json({ message: "Successfully liked"})
     }
     catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ error: error.message })
         console.log(`Error in LikePost: ${error.message}`)
     }
 }
@@ -104,11 +105,11 @@ const replyPost = async(req, res) => {
         const post = await Post.findById(postId)
 
         if(!post) {
-            return res.status(404).json({ message: "Post not found" })
+            return res.status(404).json({ error: "Post not found" })
         }
 
         if(!text) {
-            return res.status(404).json({ message: "Fill all fields" })
+            return res.status(404).json({ error: "Fill all fields" })
         }
         const reply = {
             userId: userId,
@@ -122,7 +123,7 @@ const replyPost = async(req, res) => {
         res.status(200).json({ message: "Reply succesfully posted" })
 
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        res.status(500).json({ error: error.message })
         console.log(`Error in replyPost: ${error.message}`)
     }
 }
@@ -138,4 +139,21 @@ const getFeedPosts = async(req, res) => {
     }
 }
 
-export { createPost, getPost, deletePost, likeUnlikePost, replyPost, getFeedPosts }
+const getUserPosts = async(req, res) => {
+    try {
+
+        const { username } = req.params 
+        const id = await User.findOne({username: username})
+
+        if (!id) {
+            return res.status(404).json({ error: "User not found" })
+        }
+
+        const feedPosts = await Post.find({postedBy: id}).sort({created: -1})
+        res.status(200).json({feedPosts});
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+
+export { createPost, getPost, deletePost, likeUnlikePost, replyPost, getFeedPosts, getUserPosts }
