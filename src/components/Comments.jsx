@@ -8,7 +8,7 @@ const Comments = ({ reply }) => {
       <Flex gap={3}>
         <Avatar 
         name={reply?.username}
-        src={reply?.prefilePic}
+        src={reply?.userProfilePic}
         />
           <Flex flexDirection={"column"} gap={3} w="full" justifyContent={"space-between"}>
               <Flex justifyContent={"space-between"} alignItems={"center"}>

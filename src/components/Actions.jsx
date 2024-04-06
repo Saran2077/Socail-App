@@ -2,7 +2,7 @@ import { Avatar, Box, Divider, Flex, Image, Modal, ModalBody, ModalContent, Moda
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import userAtom from "./../atom/userAtom.js"
-import useShowToast from '../hooks/useShowToast';
+import useShowToast from '../hooks/useShowToast.js';
 
 const Actions = ({ feed:feed_ }) => {
   const currentUser = useRecoilValue(userAtom)
