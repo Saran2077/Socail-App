@@ -5,12 +5,16 @@ import Actions from '../components/Actions'
 import Comments from '../components/Comments'
 import { useParams } from 'react-router-dom'
 import useShowToast from '../hooks/useShowToast'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import postAtom from "./../atom/postAtom.js"
 
 const PostPage = () => {
   const { username, pid } = useParams()
   const[post, setPost] = useState(null)
-  const[user, setUser] = useState(null)
+  const posts = useRecoilValue(postAtom)
+  const setPosts = useRecoilState(postAtom)
   const showToast = useShowToast()
+  const[user, setUser] = useState(null)
   useEffect(() => {
     const getPost = async() => {
       try {

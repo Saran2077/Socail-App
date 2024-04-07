@@ -1,17 +1,24 @@
-import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Stack, Text } from '@chakra-ui/react'
+import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import { React, useEffect, useState } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import { Link, useNavigate } from 'react-router-dom'
 import Actions from './Actions'
 import useShowToast from '../hooks/useShowToast'
 import { formatDistanceToNow } from "date-fns"
-
+import { DeleteIcon, WarningIcon } from '@chakra-ui/icons'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import userAtom from '../atom/userAtom'
 
 const UserPost = ({ feed }) => {
   const [liked, setLiked] = useState(false)
+  const currentUser = useRecoilValue(userAtom)
+  const setCurrentUser = useRecoilState(userAtom)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   const handleDownload = () => {
     window.location.href = feed.img 
   }
+
   const[user, setUser] = useState(null)
   const userId = feed.postedBy 
   const showToast = useShowToast()
@@ -20,6 +27,23 @@ const UserPost = ({ feed }) => {
   const handleRedirect = (e) => {
     e.preventDefault()
     navigate(`/${user.username}`)
+  }
+
+  const handleDeletePost = async(e) => {
+    e.preventDefault()
+    try {
+        const res = await fetch(`/api/posts/${feed._id}`, {
+            method: "DELETE"
+        })
+        const data = await res.json()
+        if (data.error) {
+            showToast("", data.error, "error")
+            return
+        }
+        showToast("", data.message, "success")
+    } catch (error) {
+        console.log(error)
+    }
   }
 
   useEffect(() => {
@@ -56,7 +80,7 @@ const UserPost = ({ feed }) => {
                         name={feed.replies[0].username}
                         position={"absolute"}
                         top={"-2px"}
-                        left={"-8px"}
+                        left={"-10px"}
                         size={"xs"}
                         padding={"2px"}
                         />)}
@@ -65,7 +89,7 @@ const UserPost = ({ feed }) => {
                         name={feed.replies[1].username}
                         position={"absolute"}
                         bottom={0}
-                        right={"0px"}
+                        right={"3px"}
                         size={"xs"}
                         padding={"2px"}
                         />)}
@@ -74,6 +98,7 @@ const UserPost = ({ feed }) => {
                         name={feed.replies[2].username}
                         position={"absolute"}
                         bottom={0}
+                        left={"4px"}
                         size={"xs"}
                         padding={"2px"}
                     />)}
@@ -84,17 +109,25 @@ const UserPost = ({ feed }) => {
                     <Text fontWeight={"bold"} onClick={handleRedirect} fontSize={"xs"}>{ user && user.username }</Text>
                     <Flex gap={4} alignContent={"center"}>
                         <Text color={"gray.light"} fontSize={"xs"}>{formatDistanceToNow(new Date(feed.createdAt))} ago</Text>
-                        <Menu>
-                            <MenuButton>
-                                <BsThreeDots />
-                            </MenuButton>
-                            <MenuList bg={"gray.dark"}>
-                                <MenuItem bg={"gray.dark"} onClick={() => handleDownload()}>Download</MenuItem>
-                                <MenuItem bg={"gray.dark"}>Copy</MenuItem>
-                            </MenuList>
-                        </Menu>
+                        {currentUser.id === feed.postedBy && <DeleteIcon onClick={
+                            (e) => {
+                                e.preventDefault()
+                                onOpen()
+                            }
+                        } />}
                     </Flex>
                 </Flex>
+                <Modal isOpen={isOpen} isCentered>
+                    <ModalContent bg={"gray.dark"}>
+                        <ModalBody>
+                            <Text fontSize={"lg"} m={7}>Do you want to delete the post?</Text>
+                            <Flex w="full" justifyContent={"flex-end"} gap={6}>
+                                <Button onClick={onClose}>Cancel</Button>
+                                <Button bg={"red"} leftIcon={<DeleteIcon />} onClick={handleDeletePost} >Delete</Button>
+                            </Flex>
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
                 <Flex flexDirection={"column"} gap={4}>
                     <Text fontSize={"xs"}>
                         { feed.text }
@@ -111,7 +144,6 @@ const UserPost = ({ feed }) => {
                 <Actions 
                     feed={feed}
                 />
-                
             </Flex>
         </Flex>
     </Link>

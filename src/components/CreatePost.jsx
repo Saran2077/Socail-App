@@ -3,7 +3,7 @@ import { Button, useDisclosure, ModalOverlay, ModalContent, Modal, ModalHeader, 
 import { useRef, useState } from "react"
 import usePreviewImg from "../hooks/usePreviewImg"
 import { BsImageFill } from "react-icons/bs"
-import { useRecoilValue } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import userAtom from "../atom/userAtom"
 import useShowToast from "../hooks/useShowToast"
 
@@ -18,6 +18,7 @@ const CreatePost = () => {
   const[isLoading, setIsLoading] = useState(false)
   const showToast = useShowToast()
   const user = useRecoilValue(userAtom)
+  const setUser = useRecoilState(userAtom)
 
   const handleTextChange = async(e) => {
     let inputText = e.target.value 
