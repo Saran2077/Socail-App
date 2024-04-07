@@ -6,6 +6,7 @@ import { BsImageFill } from "react-icons/bs"
 import { useRecoilState, useRecoilValue } from "recoil"
 import userAtom from "../atom/userAtom"
 import useShowToast from "../hooks/useShowToast"
+import postAtom from "../atom/postAtom"
 
 const MAX_CHAR = 500
 
@@ -18,7 +19,7 @@ const CreatePost = () => {
   const[isLoading, setIsLoading] = useState(false)
   const showToast = useShowToast()
   const user = useRecoilValue(userAtom)
-  const setUser = useRecoilState(userAtom)
+  const [posts, setPosts] = useRecoilState(postAtom)
 
   const handleTextChange = async(e) => {
     let inputText = e.target.value 
@@ -56,6 +57,7 @@ const CreatePost = () => {
             setImgUrl(null)
             setPostText("")
             onClose()
+            setPosts([...posts, data.post])
         }
     } catch (error) {
         console.log(error)
@@ -78,7 +80,7 @@ const CreatePost = () => {
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={"gray.dark"}>
           <ModalHeader>Create Post</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

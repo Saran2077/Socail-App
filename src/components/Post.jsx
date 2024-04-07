@@ -6,13 +6,16 @@ import Actions from './Actions'
 import useShowToast from '../hooks/useShowToast'
 import { formatDistanceToNow } from "date-fns"
 import { DeleteIcon, WarningIcon } from '@chakra-ui/icons'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import userAtom from '../atom/userAtom'
+import postAtom from '../atom/postAtom'
 
-const UserPost = ({ feed }) => {
-  const [liked, setLiked] = useState(false)
+
+const Post = ({ feed }) => {
   const currentUser = useRecoilValue(userAtom)
-  const setCurrentUser = useRecoilState(userAtom)
+  const posts = useRecoilValue(postAtom)
+  const setPosts = useSetRecoilState(postAtom)
+  const[deleting, setDeleting] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleDownload = () => {
@@ -30,6 +33,7 @@ const UserPost = ({ feed }) => {
   }
 
   const handleDeletePost = async(e) => {
+    setDeleting(true)
     e.preventDefault()
     try {
         const res = await fetch(`/api/posts/${feed._id}`, {
@@ -40,9 +44,14 @@ const UserPost = ({ feed }) => {
             showToast("", data.error, "error")
             return
         }
+        onClose()
         showToast("", data.message, "success")
+        setPosts(posts.filter((post) => post._id != feed._id))
+        console.log(posts)
     } catch (error) {
         console.log(error)
+    } finally {
+        setDeleting(false)
     }
   }
 
@@ -109,7 +118,7 @@ const UserPost = ({ feed }) => {
                     <Text fontWeight={"bold"} onClick={handleRedirect} fontSize={"xs"}>{ user && user.username }</Text>
                     <Flex gap={4} alignContent={"center"}>
                         <Text color={"gray.light"} fontSize={"xs"}>{formatDistanceToNow(new Date(feed.createdAt))} ago</Text>
-                        {currentUser.id === feed.postedBy && <DeleteIcon onClick={
+                        {currentUser?.id === feed.postedBy && <DeleteIcon onClick={
                             (e) => {
                                 e.preventDefault()
                                 onOpen()
@@ -123,7 +132,7 @@ const UserPost = ({ feed }) => {
                             <Text fontSize={"lg"} m={7}>Do you want to delete the post?</Text>
                             <Flex w="full" justifyContent={"flex-end"} gap={6}>
                                 <Button onClick={onClose}>Cancel</Button>
-                                <Button bg={"red"} leftIcon={<DeleteIcon />} onClick={handleDeletePost} >Delete</Button>
+                                <Button bg={"red"} leftIcon={<DeleteIcon />} isLoading={deleting} onClick={handleDeletePost}>Delete</Button>
                             </Flex>
                         </ModalBody>
                     </ModalContent>
@@ -150,4 +159,4 @@ const UserPost = ({ feed }) => {
   )
 }
 
-export default UserPost
+export default Post

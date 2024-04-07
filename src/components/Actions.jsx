@@ -1,14 +1,16 @@
 import { Avatar, Box, Divider, Flex, Image, Modal, ModalBody, ModalContent, ModalFooter, Text, useDisclosure, Input, Button, Stack, Textarea } from '@chakra-ui/react'
 import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import userAtom from "./../atom/userAtom.js"
 import useShowToast from '../hooks/useShowToast.js';
+import postAtom from '../atom/postAtom.js';
 
-const Actions = ({ feed:feed_ }) => {
+const Actions = ({ post }) => {
   const currentUser = useRecoilValue(userAtom)
-  const[feed, setFeed] = useState(feed_)
+  const[feed, setFeed] = useState(post)
+  const [posts, setPosts] = useRecoilState(postAtom)
   const[isLoading, setIsLoading] = useState(false)
-  const[liked, setLiked] = useState(feed?.likes.includes(currentUser.id))
+  const[liked, setLiked] = useState(feed?.likes.includes(currentUser?.id))
   const showToast = useShowToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const[reply, setReply] = useState("")
@@ -18,7 +20,7 @@ const Actions = ({ feed:feed_ }) => {
     if (reply === "") return showToast("", "Enter a comment to post", "error")
 	setIsLoading(true)
 	try {
-		const res = await fetch("/api/posts/reply/"+feed._id, {
+		const res = await fetch("/api/posts/reply/"+feed?._id, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -35,6 +37,13 @@ const Actions = ({ feed:feed_ }) => {
 		setFeed({...feed, replies: [...feed.replies, data]})
 		showToast("", data.message, "success")
 		setReply("")
+		let modifiedPost = posts.map((post) => {
+			if (post._id == feed._id) {
+				return data.post
+			}
+			return post 
+		})
+		setPosts(modifiedPost)
 		onClose()
 	} catch (error) {
 		console.log(error)
@@ -69,7 +78,7 @@ const Actions = ({ feed:feed_ }) => {
   return (
 	<Flex w="full" flexDirection={"column"}>
 		<Flex gap={2} alignItems={"center"} my={2} onClick={(e) => e.preventDefault()}>
-		<svg
+			<svg
 			aria-label='Like'
 			color={liked ? "rgb(237, 73, 86)" : ""}
 			fill={liked ? "rgb(237, 73, 86)" : "transparent"}
@@ -77,6 +86,7 @@ const Actions = ({ feed:feed_ }) => {
 			role='img'
 			viewBox='0 0 24 22'
 			width='20'
+			cursor={"pointer"}
 			onClick={handleLikeUnlike}
 					>
 						<path
@@ -84,28 +94,30 @@ const Actions = ({ feed:feed_ }) => {
 							stroke='currentColor'
 							strokeWidth='2'
 						></path>
-					</svg>
+			</svg>
 
-					<svg
-						aria-label='Comment'
-						color=''
-						fill=''
-						height='20'
-						role='img'
-						viewBox='0 0 24 24'
-						width='20'
-						onClick={onOpen}
-					>
-						<title>Comment</title>
-						<path
-							d='M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z'
-							fill='none'
-							stroke='currentColor'
-							strokeLinejoin='round'
-							strokeWidth='2'
-						></path>
-					</svg>
+			<svg
+				aria-label='Comment'
+				color=''
+				fill=''
+				height='20'
+				role='img'
+				viewBox='0 0 24 24'
+				width='20'
+				onClick={onOpen}
+			>
+				<title>Comment</title>
+				<path
+					d='M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z'
+					fill='none'
+					stroke='currentColor'
+					strokeLinejoin='round'
+					strokeWidth='2'
+				></path>
+			</svg>
+
 			<RepostSVG />
+
 			<ShareSVG />
 		</Flex>
 		<Modal isOpen={isOpen} onClose={onClose}>

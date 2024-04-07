@@ -2,30 +2,14 @@ import React, { useEffect, useState } from 'react'
 import UserHeader from '../components/UserHeader'
 import Post from '../components/Post.jsx'
 import { useParams } from 'react-router-dom'
-import useShowToast from "./../hooks/useShowToast.js"
+import { useRecoilState } from 'recoil'
+import postAtom from '../atom/postAtom.js'
+import useGetUser from "./../hooks/useGetUser.js"
 
 const UserPage = () => {
-  const[user, setUser] = useState(null)
-  const[posts, setPosts] = useState([])
+  const[posts, setPosts] = useRecoilState(postAtom)
   const { username } = useParams()
-  const showToast = useShowToast()
-
-  useEffect(() => {
-    const getUser = async() => {
-      try {
-        const res = await fetch(`/api/users/getUserProfile/${username}`)
-        const data = await res.json()
-        if(data.error) {
-          showToast("", data.error, "error")
-          return
-        }
-        setUser(data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    getUser()
-  }, [username, showToast])
+  const { user, isLoading } = useGetUser()
 
   useEffect(() => {
     const getUserPosts = async () => {

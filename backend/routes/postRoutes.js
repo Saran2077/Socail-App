@@ -14,7 +14,7 @@ router.delete("/:postId", protectRoute, deletePost)
 
 router.post("/like/:postId", protectRoute, likeUnlikePost)
 
-router.get("/getUserPost/:username", protectRoute, getUserPosts)
+router.get("/getUserPost/:username", getUserPosts)
 
 router.post("/reply/:postId", protectRoute, replyPost)
 

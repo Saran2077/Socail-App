@@ -12,7 +12,7 @@ const UserHeader = ({ user }) => {
   const currentUser = useRecoilValue(userAtom)
   const setCurrentUser = useSetRecoilState(userAtom)
   const[updating, setUpdating] = useState(false)
-  const[following, setFollowing] = useState(currentUser.following.includes(user._id))
+  const[following, setFollowing] = useState(currentUser?.following.includes(user._id))
   const copyUrl = () => {
     const currentUrl = window.location.href;
     navigator.clipboard.writeText(currentUrl);
@@ -38,7 +38,7 @@ const UserHeader = ({ user }) => {
         }
         updatedUser.following = following ? updatedUser.following.filter(id => id !== user._id)
         : [...updatedUser.following, user._id];
-        following ? user.followers.pop() : user.followers.push(currentUser.id)
+        following ? user.followers.filter(id => id != currentUser?.id) : user.followers.push(currentUser?.id)
         localStorage.setItem("user-info", JSON.stringify(updatedUser))
         setCurrentUser(updatedUser)
         setFollowing(!following)
@@ -93,11 +93,11 @@ const UserHeader = ({ user }) => {
                 md: "md"
             }
         }>{ user.bio }</Text>
-        {currentUser.id === user._id && 
+        {currentUser?.id === user._id && 
         <RouterLink to="/update">
             <Button>Update Profile</Button>
         </RouterLink>}
-        {currentUser.id !== user._id && 
+        {currentUser?.id !== user._id && 
             <Button onClick={handleFollowUnfollow} isLoading={updating}>{!following ? "Follow" : "Unfollow"}</Button>}
         <Flex w="full" justifyContent={"space-between"}>
             <Flex gap={2} alignItems={"center"}>

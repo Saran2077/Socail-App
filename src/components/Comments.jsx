@@ -19,7 +19,7 @@ const Comments = ({ reply }) => {
                 </Flex>
               </Flex>
               <Text>{ reply?.text }</Text>
-              <Actions />
+              {/* <Actions /> */}
           </Flex>
       </Flex>
       <Divider />

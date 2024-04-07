@@ -19,7 +19,7 @@ const createPost = async(req, res) => {
         }
         await newPost.save();
 
-        res.status(200).json({ message: "Successfully posted" })
+        res.status(200).json({ message: "Successfully posted", post: newPost })
         
         
     } catch (error) {
@@ -46,7 +46,6 @@ const getPost = async(req, res) => {
 const deletePost = async(req, res) => {
     try {
         const postId = req.params.postId;
-        console.log(postId)
         const post = await Post.findById({_id: postId});
 
         if(!post) {
@@ -57,6 +56,11 @@ const deletePost = async(req, res) => {
             return res.status(401).json({ message: "Unauthorized to delete post" })
         }
 
+        if(post.img) {
+            let imgId = post.img.split("/").slice(-1)[0].split(".")[0]
+            await cloudinary.uploader.destroy(imgId);
+        }
+
         await Post.findByIdAndDelete(post._id.valueOf());
 
 
@@ -65,7 +69,7 @@ const deletePost = async(req, res) => {
     }
     catch (error) {
         res.status(401).json({ message: error.message });
-        console.log(`Error: ${error.message}`)
+        console.log(`Error in delete post: ${error.message}`)
     }
 }
 
@@ -120,7 +124,7 @@ const replyPost = async(req, res) => {
         post.replies.push(reply)
         await post.save()
 
-        res.status(200).json({ message: "Reply succesfully posted" })
+        res.status(200).json({ message: "Reply succesfully posted" , post})
 
     } catch (error) {
         res.status(500).json({ error: error.message })
