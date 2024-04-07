@@ -52,8 +52,8 @@ const UserPost = ({ feed }) => {
                 <Box w="fullxs" position={"relative"}>
                     {feed.replies.length === 0 && <Text align={"center"}>🥱</Text>}
                     {feed.replies[0] && (<Avatar 
-                        src={ feed.replies[0].profilePic}
-                        name={feed.replies[0].name}
+                        src={ feed.replies[0].userProfilePic}
+                        name={feed.replies[0].username}
                         position={"absolute"}
                         top={"-2px"}
                         left={"-8px"}
@@ -61,8 +61,8 @@ const UserPost = ({ feed }) => {
                         padding={"2px"}
                         />)}
                     {feed.replies[1] && (<Avatar 
-                        src={feed.replies[1].profilePic}
-                        name={feed.replies[1].name}
+                        src={feed.replies[1].userProfilePic}
+                        name={feed.replies[1].username}
                         position={"absolute"}
                         bottom={0}
                         right={"0px"}
@@ -70,8 +70,8 @@ const UserPost = ({ feed }) => {
                         padding={"2px"}
                         />)}
                     {feed.replies[2] && (<Avatar 
-                        src={feed.replies[2].profilePic}
-                        name={feed.replies[2].name}
+                        src={feed.replies[2].userProfilePic}
+                        name={feed.replies[2].username}
                         position={"absolute"}
                         bottom={0}
                         size={"xs"}
