@@ -70,13 +70,12 @@ const CreatePost = () => {
   return (
     <>
       <Button
-       leftIcon={<AddIcon />}
        position={"fixed"}
        bottom={10}
-       right={10}
+       right={5}
        onClick={onOpen}
       >
-        Post
+        <AddIcon />
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

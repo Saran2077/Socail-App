@@ -13,8 +13,7 @@ import userAtom from '../atom/userAtom.js'
 
 const PostPage = () => {
   const {  pid } = useParams()
-  const[post, setPost] = useState(null)
-  const [ posts, setPosts ] = useRecoilState(postAtom)
+  // const [ post, setPost ] = useRecoilState(postAtom)
   const showToast = useShowToast()
   const { user, isLoading } = useGetUser()
   const currentUser = useRecoilValue(userAtom)
@@ -35,7 +34,7 @@ const PostPage = () => {
         }
         onClose()
         showToast("", data.message, "success")
-        setPosts(posts.filter((posta) => posta._id != post._id))
+        setPost(posts.filter((p) => p._id != post._id))
         navigate(`/${user?.username}`)
     } catch (error) {
         console.log(error)
@@ -53,8 +52,7 @@ const PostPage = () => {
         if (data.error) {
           return showToast("", data.error, "error")
         }
-        setPost(data)
-        
+        setPost([data])
       } catch (error) {
         showToast("", error, "error")
       }
@@ -76,8 +74,8 @@ const PostPage = () => {
         <Flex alignItems={"center"} gap="3">
           <Text fontSize={"xs"} color={"gray.light"}>{ "" }</Text>
           <Flex gap={2} alignItems={"center"}>
-            <Text>{ post && formatDistanceToNow(post?.createdAt) }</Text>
-            {post?.postedBy === currentUser?.id && <DeleteIcon cursor={"pointer"} onClick={onOpen}/>}
+            <Text>{ post[0] && formatDistanceToNow(post[0]?.createdAt) }</Text>
+            {post[0]?.postedBy === currentUser?.id && <DeleteIcon cursor={"pointer"} onClick={onOpen}/>}
             <Modal isOpen={isOpen} isCentered>
               <ModalContent bg={"gray.dark"}>
                   <ModalBody>
@@ -92,17 +90,17 @@ const PostPage = () => {
           </Flex>
         </Flex>
       </Flex>
-      <Text>{ post?.text }</Text>
+      <Text>{ post[0]?.text }</Text>
       <Box overflow={"hidden"} border={"1px solid"} borderColor={"gray.light"} borderRadius={"10"}>
         <Image
-          src={ post?.img }
+          src={ post[0]?.img }
         />
       </Box>
-      { post && <Actions post={post}/> }
+      { post[0] && <Actions post={post[0]}/> }
       
       <Divider />
-      {post?.replies.map((reply) => (
-        <Comments reply={reply} />
+      {post[0]?.replies.map((reply) => (
+        <Comments reply={ reply } />
       ))}
     </Flex>
   )

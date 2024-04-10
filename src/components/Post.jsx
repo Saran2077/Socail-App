@@ -1,6 +1,5 @@
 import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import { React, useEffect, useState } from 'react'
-import { BsThreeDots } from 'react-icons/bs'
 import { Link, useNavigate } from 'react-router-dom'
 import Actions from './Actions'
 import useShowToast from '../hooks/useShowToast'
@@ -151,7 +150,7 @@ const Post = ({ feed }) => {
 
                 </Flex>
                 <Actions 
-                    feed={feed}
+                    post={feed}
                 />
             </Flex>
         </Flex>

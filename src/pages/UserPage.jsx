@@ -26,13 +26,13 @@ const UserPage = () => {
       setPosts(data.feedPosts)
     }
     getUserPosts()
-  }, [username])
+  }, [username, setPosts])
 
 
   return (
     <>
         {user && <UserHeader user={ user }/>}
-        {posts && posts.map((post) => <Post feed={ post } />)}
+        {posts && posts.map((post) => <Post key={post._id} feed={ post } />)}
     </>
   )
 }
