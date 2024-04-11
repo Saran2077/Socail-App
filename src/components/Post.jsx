@@ -1,19 +1,18 @@
-import { Avatar, Box, Button, Flex, Image, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, Stack, Text, useDisclosure } from '@chakra-ui/react'
+import { Avatar, Box, Button, Flex, Image, Modal, ModalBody, ModalContent, Stack, Text, useDisclosure } from '@chakra-ui/react'
 import { React, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Actions from './Actions'
 import useShowToast from '../hooks/useShowToast'
 import { formatDistanceToNow } from "date-fns"
-import { DeleteIcon, WarningIcon } from '@chakra-ui/icons'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import userAtom from '../atom/userAtom'
 import postAtom from '../atom/postAtom'
 
 
 const Post = ({ feed }) => {
   const currentUser = useRecoilValue(userAtom)
-  const posts = useRecoilValue(postAtom)
-  const setPosts = useSetRecoilState(postAtom)
+  const [posts, setPosts] = useRecoilState(postAtom)
   const[deleting, setDeleting] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
 

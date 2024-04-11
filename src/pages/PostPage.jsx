@@ -13,7 +13,7 @@ import userAtom from '../atom/userAtom.js'
 
 const PostPage = () => {
   const {  pid } = useParams()
-  // const [ post, setPost ] = useRecoilState(postAtom)
+  const [ post, setPost ] = useRecoilState(postAtom)
   const showToast = useShowToast()
   const { user, isLoading } = useGetUser()
   const currentUser = useRecoilValue(userAtom)
@@ -34,7 +34,7 @@ const PostPage = () => {
         }
         onClose()
         showToast("", data.message, "success")
-        setPost(posts.filter((p) => p._id != post._id))
+        setPost(post.filter((p) => p._id != post[0]._id))
         navigate(`/${user?.username}`)
     } catch (error) {
         console.log(error)
@@ -46,6 +46,7 @@ const PostPage = () => {
 
   useEffect(() => {
     const getPost = async() => {
+      setPost([])
       try {
         const res = await fetch("/api/posts/"+pid)
         const data = await res.json()

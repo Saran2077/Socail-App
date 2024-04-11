@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import userAtom from "../atom/userAtom"
 import useShowToast from "../hooks/useShowToast"
 import postAtom from "../atom/postAtom"
+import { useParams } from 'react-router-dom'
 
 const MAX_CHAR = 500
 
@@ -19,6 +20,8 @@ const CreatePost = () => {
   const[isLoading, setIsLoading] = useState(false)
   const showToast = useShowToast()
   const user = useRecoilValue(userAtom)
+  const { username } = useParams()
+  console.log(username)
   const [posts, setPosts] = useRecoilState(postAtom)
 
   const handleTextChange = async(e) => {
@@ -57,7 +60,10 @@ const CreatePost = () => {
             setImgUrl(null)
             setPostText("")
             onClose()
-            setPosts([...posts, data.post])
+            console.log(username, user.username)
+            if (username === user.username) {
+              setPosts([...posts, data.post])
+            }
         }
     } catch (error) {
         console.log(error)

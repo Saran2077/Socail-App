@@ -208,5 +208,18 @@ const getUserById = async(req, res) => {
     }
 }
 
+const searchUserByUsername = async(req, res) => {
+    try {
+        const { username } = req.body
+        const users = await User.find({username: { $regex: new RegExp(username, 'i') }})
+        if (!users) {
+            res.status(404).json({ error: "User not found" })
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
 
-export{ signUpUser, loginUser, logoutUser, followUnfollowUser, updateUser, getUserProfile, getUserById };
+
+export{ signUpUser, loginUser, logoutUser, followUnfollowUser, updateUser, getUserProfile, getUserById, searchUserByUsername };

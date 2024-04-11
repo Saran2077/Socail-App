@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
 import Post from "../components/Post"
 import { Flex, Spinner } from '@chakra-ui/react'
+import { useRecoilState } from 'recoil'
+import postAtom from '../atom/postAtom'
 
 const HomePage = () => {
-  const[feeds, setFeed] = useState([])
+  const [posts, setPosts] = useRecoilState(postAtom)
   const[isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const getFeed = async() => {
       try{
         const res = await fetch(`/api/posts/feed`)
         const data =await res.json()
-        setFeed(data.feedPosts)
-        console.log(data)
+        setPosts(data.feedPosts)
       }
       catch (error) {
         console.log(error)
@@ -32,8 +33,8 @@ const HomePage = () => {
       ) : (
         <>
         {
-          feeds.map((feed) => (
-            <Post key={feed._id} feed={feed} />
+          posts.map((post) => (
+            <Post key={post._id} feed={post} />
           ))
         }
       </>

@@ -118,13 +118,13 @@ const replyPost = async(req, res) => {
         const reply = {
             userId: userId,
             text:text,
-            userProfilePic: req.user.profilePic, 
-            username: req.user.username
+            username:username,
+            userProfilePic:profilePic
         }
         post.replies.push(reply)
         await post.save()
 
-        res.status(200).json({ message: "Reply succesfully posted" , post})
+        res.status(200).json({ message: "Reply succesfully posted" , reply})
 
     } catch (error) {
         res.status(500).json({ error: error.message })

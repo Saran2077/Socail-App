@@ -1,8 +1,9 @@
 import { Avatar, Divider, Flex, Text } from "@chakra-ui/react"
 import { BsThreeDots } from 'react-icons/bs'
-import Actions from "./Actions"
+import useShowToast from "../hooks/useShowToast"
 
 const Comments = ({ reply }) => {
+
   return (
     <>
       <Flex gap={3}>
@@ -19,7 +20,6 @@ const Comments = ({ reply }) => {
                 </Flex>
               </Flex>
               <Text>{ reply?.text }</Text>
-              {/* <Actions /> */}
           </Flex>
       </Flex>
       <Divider />

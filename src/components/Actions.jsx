@@ -37,7 +37,7 @@
 			setReply("")
 			let updatedPost = posts.map((p) => {
 				if (p._id === post._id) {
-					return { ...p, replies: [data, ...p.replies ]}
+					return { ...p, replies: [data.reply, ...p.replies ]}
 				}
 				return p
 			})
