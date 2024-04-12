@@ -76,23 +76,26 @@ const deletePost = async(req, res) => {
 const likeUnlikePost = async(req, res) => {
     try {
         const postId = req.params.postId 
-        const userId = req.user._id 
+        const user = req.user 
         const post = await Post.findById(postId)
-
         if(!post) {
             res.status(404).json({ error: "Post not found" })
         }
-
-        const isLiked = post.likes.includes(userId);
-
-        if(isLiked) {
-            post.likes = post.likes.filter((id) => id != userId.valueOf())
+        const isLiked = post.likes.filter((like) => like.userId.valueOf() == user._id);
+        if(isLiked.length > 0) {
+            post.likes = post.likes.filter((id) => id.userId.valueOf() != user._id.valueOf())
             await post.save()
             return res.status(200).json({ message: "Successfully Unliked"})
         }
-        post.likes.push(userId)
+        console.log(user._id.valueOf(), user._id)
+        const like = {
+            userId: user._id.valueOf(),
+            username:user.username,
+            userProfilePic:user.profilePic
+        }
+        post.likes.push(like)
         await post.save()
-        res.status(200).json({ message: "Successfully liked"})
+        res.status(200).json({ message: "Successfully liked", like})
     }
     catch (error) {
         res.status(500).json({ error: error.message })
@@ -103,7 +106,7 @@ const likeUnlikePost = async(req, res) => {
 const replyPost = async(req, res) => {
     try {
         const { postId } = req.params;
-        const userId = req.user._id 
+        const user = req.user
         const { text } = req.body 
 
         const post = await Post.findById(postId)
@@ -116,10 +119,10 @@ const replyPost = async(req, res) => {
             return res.status(404).json({ error: "Fill all fields" })
         }
         const reply = {
-            userId: userId,
+            userId: user._id,
             text:text,
-            username:username,
-            userProfilePic:profilePic
+            username:user.username,
+            userProfilePic:user.profilePic
         }
         post.replies.push(reply)
         await post.save()

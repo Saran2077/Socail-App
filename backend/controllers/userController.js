@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import User from '../modals/userModel.js'
 import bcrypt  from "bcryptjs"
+import Post from '../modals/postModel.js'
 import generateTokenAndSetCookie from "../utils/helpers/generateTokenAndSetCookie.js"
 import {v2 as cloudinary} from "cloudinary"
 
@@ -162,6 +163,31 @@ const updateUser = async(req, res) => {
         user.profilePic = profilePic || user.profilePic
         user.bio = bio || user.bio
         await user.save()
+
+        await Post.updateMany(
+            {"replies.userId":userId},
+            {
+                $set: {
+                    "replies.$[reply].username": user.username,
+                    "replies.$[reply].userProfilePic": user.profilePic
+                }
+            },
+            {
+                arrayFilters:[{"reply.userId": userId}]
+            }
+        )
+        await Post.updateMany(
+            {"likes.userId":userId},
+            {
+                $set: {
+                    "likes.$[like].username": user.username,
+                    "likes.$[like].userProfilePic": user.profilePic
+                }
+            },
+            {
+                arrayFilters:[{"like.userId": userId}]
+            }
+        )
 
         res.status(200).json({
             id: user._id,

@@ -6,13 +6,24 @@
 	import postAtom from '../atom/postAtom.js';
 
 	const Actions = ({ post }) => {
-	const currentUser = useRecoilValue(userAtom)
+	const [currentUser, setCurrentUser] = useRecoilState(userAtom)
 	const [posts, setPosts] = useRecoilState(postAtom)
 	const[isLoading, setIsLoading] = useState(false)
-	const[liked, setLiked] = useState(post?.likes.includes(currentUser?.id))
+	const[liked, setLiked] = useState(post?.likes.filter((like) => like.userId === currentUser.id).length > 0 ? true : false)
 	const showToast = useShowToast()
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const[reply, setReply] = useState("")
+	const likesModal = useDisclosure()
+	const [updating, setUpdating] = useState(false)
+
+	const handleRepost = async() => {
+		if(!currentUser) return showToast("", "Login to use repost", "error")
+		try {
+			
+		} catch (error) {
+			showToast("", error.message, "error")
+		}
+	}
 
 	const handleReply = async() => {
 		if(!currentUser) return showToast("", "Login to post comments", "error")
@@ -50,6 +61,39 @@
 		}
 	}
 
+	const handleFollowUnfollow = async(user) => {
+		if(!currentUser) {
+			return
+		}
+		setUpdating(true)
+		try {
+			const res = await fetch(`/api/users/followUnfollow/${user._id}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			})
+			const data = await res.json()
+			let updatedUser = {...currentUser}
+			if(data.error) {
+				showToast("", data.error, "error")
+				return
+			}
+			updatedUser.following = following ? updatedUser.following.filter(id => id !== user._id)
+			: [...updatedUser.following, user._id];
+			following ? user.followers.filter(id => id != currentUser?.id) : user.followers.push(currentUser?.id)
+			localStorage.setItem("user-info", JSON.stringify(updatedUser))
+			setCurrentUser(updatedUser)
+			setFollowing(!following)
+			showToast("", data.message, "success")
+		} catch (error) {
+			console.log("error", error)
+		}
+		finally {
+			setUpdating(false)
+		}
+	  }
+
 	const handleLikeUnlike = async() => {
 		try {
 			const res = await fetch(`/api/posts/like/${post._id}`, {
@@ -63,7 +107,7 @@
 			if(liked) {
 				let updatedPost = posts.map((p) => {
 					if (p._id === post._id) {
-						return { ...p, likes: p.likes.filter((id) => id != currentUser.id)}
+						return { ...p, likes: p.likes.filter((id) => id.userId != currentUser.id)}
 					}
 					return p
 				})
@@ -72,7 +116,7 @@
 			else{ 
 				let updatedPost = posts.map((p) => {
 					if (p._id === post._id) {
-						return { ...p, likes: [...p.likes, currentUser.id] }
+						return { ...p, likes: [...p.likes, data.like] }
 					}
 					return p
 				})
@@ -149,8 +193,40 @@
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+
+			<Modal isOpen={likesModal.isOpen} onClose={likesModal.onClose}>
+				<ModalContent borderRadius={20}  bg={"#101010"} minHeight={"30vh"} maxHeight={"60vh"} overflow={"auto"} css={{
+					"&::-webkit-scrollbar": {
+						width: "4px"
+					}
+				}}>
+                    <ModalBody>
+                        <Stack mt={2}>
+							<Text textAlign={"center"}>Likes</Text>
+							<Divider mt={2}/>
+                            {post?.likes.map((like) => {
+								return(
+									<Flex key={like.userId} mt={2} alignItems={"center"} justifyContent={"space-between"}>
+										<Flex gap={3} alignItems={"center"}>
+											<Avatar name={like.username} src={like.userProfilePic} size={"md"}/>
+											<Text>{like.username}</Text>
+										</Flex>
+										<Button size={"sm"} bg={"rgb(0, 149, 246)"} _hover={{
+											"background-color": "rgba(0, 130, 246)"
+										}} onClick={(like) => handleFollowUnfollow(like)}>
+											{currentUser?.following.includes(like.userId) ? "Unfollow" : "Follow"}
+										</Button>
+									</Flex>
+								)
+							})}
+						</Stack>
+					</ModalBody>
+				</ModalContent>
+			</Modal>
 			<Flex gap={2} alignItems={"center"}>
-					<Text color={"gray.light"} fontSize="sm">
+					<Text cursor={"pointer"}  color={"gray.light"} fontSize="sm" onClick={(e) => {
+						e.preventDefault()
+						likesModal.onOpen()}}>
 						{post?.likes.length}{post?.likes.length <= 1 ? " like" : " likes"}
 					</Text>
 					<Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
