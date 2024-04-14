@@ -211,11 +211,11 @@
 											<Avatar name={like.username} src={like.userProfilePic} size={"md"}/>
 											<Text>{like.username}</Text>
 										</Flex>
-										<Button size={"sm"} bg={"rgb(0, 149, 246)"} _hover={{
+										{currentUser.id !== like.userId && <Button size={"sm"} bg={"rgb(0, 149, 246)"} _hover={{
 											"background-color": "rgba(0, 130, 246)"
 										}} onClick={(like) => handleFollowUnfollow(like)}>
 											{currentUser?.following.includes(like.userId) ? "Unfollow" : "Follow"}
-										</Button>
+										</Button>}
 									</Flex>
 								)
 							})}
