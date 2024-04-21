@@ -1,12 +1,38 @@
 import { Search2Icon } from '@chakra-ui/icons'
 import { Box, Button, Container, Flex, Input, Skeleton, SkeletonCircle, Text, useColorModeValue } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Conversation from '../components/Conversation'
 import { GiConversation } from 'react-icons/gi'
 import MessageContainer from '../components/MessageContainer'
+import useShowToast from '../hooks/useShowToast'
+import conversationAtom from '../atom/conversationAtom.js'
+import { useRecoilValue } from 'recoil'
 
 const ChatPage = () => {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const[conversations, setConversations] = useState([])
+  const showToast = useShowToast()
+  const currentConversation = useRecoilValue(conversationAtom)
+
+  useEffect(() => {
+    const getConversations = async() => {
+      try {
+        const res = await fetch("api/messages/conversations")
+        const data = await res.json()
+        if (data.error) {
+          return showToast("", data.error, "error")
+        }
+        console.log(data)
+        setConversations(data)
+      } catch (error) {
+        useShowToast("", error.message, "error")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    getConversations()
+  }, [])
+
   return (
     <Box position={"absolute"} left={"50%"} transform={"translateX(-50%)"} p={4} w={{
       base: "100%",
@@ -44,16 +70,22 @@ const ChatPage = () => {
               ))
             )}
 
-            <Conversation />
-            <Conversation />
-            <Conversation />
-            <Conversation />
+            {conversations.length > 0 ? (
+              conversations.map((conversation) => {
+                return (
+                  <Conversation key={conversation.id} conversation={conversation} />
+                )
+              })
+            ) : (
+              <></>
+            )}
           </Flex>
-          <MessageContainer />
-          {/* <Flex flex={70} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} height={"400px"}>
+          {!currentConversation ? (<Flex flex={70} flexDirection={"column"} alignItems={"center"} justifyContent={"center"} height={"400px"}>
             <GiConversation size={100}/>
             <Text fontSize={20}>Select a conversation to start messaging</Text>
-          </Flex> */}
+          </Flex>)
+          :
+          (<MessageContainer currentConversation={currentConversation}/>)}
       </Flex>
     </Box>
   )

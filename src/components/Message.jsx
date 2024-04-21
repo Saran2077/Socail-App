@@ -1,4 +1,4 @@
-import { Button, Flex, Input } from '@chakra-ui/react'
+import { Flex, Avatar, Text } from '@chakra-ui/react'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import userAtom from "./../atom/userAtom.js"
@@ -8,11 +8,11 @@ const Message = ({ message }) => {
   return (
    <Flex
     gap={2}
-    flexDirection={currentUser.id === message.sentBy ? "row" : "row-reverse"}
+    flexDirection={message.sender === currentUser.id ? "row-reverse" : "row"}
    >
-     <Avatar src="" />
-     <Text maxW="350px" bg={currentUser.id === message.sentBy ? "blue.400" : "gray.400"} color={currentUser.id === message.sentBy ? "white" : "black"} p={1} borderRadius={"md"}>
-        {message.message}
+     <Avatar src={message.sender === currentUser.id ? currentUser.profilePic : message.profilePic} w={7} h={7} />
+     <Text maxW="350px" bg={message.sender === currentUser.id ? "blue.400" : "gray.400"} color={message.sender === currentUser.id ? "white" : "black"} p={1} borderRadius={"md"}>
+        {message.text} 
      </Text>
    </Flex>
   )
