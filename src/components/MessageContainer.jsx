@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react'
 import Message from './Message'
 import MessageInput from './MessageInput'
 import useShowToast from '../hooks/useShowToast'
+import messageAtom from '../atom/messageAtom'
+import { useRecoilState } from 'recoil'
 
 const MessageContainer = ({ currentConversation }) => {
   const showToast = useShowToast()
-  const[messages, setMessages] = useState([])
+  const[messages, setMessages] = useRecoilState(messageAtom)
   const[isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -18,7 +20,6 @@ const MessageContainer = ({ currentConversation }) => {
                 return showToast("", data.error, "error")
             }
             setMessages(data)
-            console.log(data)
 
         } catch (error) {
             showToast("", error.message, "error")
