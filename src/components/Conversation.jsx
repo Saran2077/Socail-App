@@ -12,10 +12,6 @@ const Conversation = ({ conversation }) => {
   const setCurrentConversation = useSetRecoilState(conversationAtom)
   const opponent = conversation?.participants.filter((id) => id != user.id)
 
-  const handleConversation = () => {
-    setCurrentConversation({...conversation, username: receiver?.username, profilePic: receiver?.profilePic})
-  }
-
   useEffect(() => {
     const getReceiver = async() => {
         try {
@@ -32,7 +28,7 @@ const Conversation = ({ conversation }) => {
   }, [conversation])
 
   return (
-    <Flex onClick={handleConversation} alignItems={"center"} gap={4} p={"1"} _hover={{
+    <Flex onClick={() => setCurrentConversation(conversation)} alignItems={"center"} gap={4} p={"1"} _hover={{
         cursor: "pointer",
         bg: useColorModeValue("gray.600", "gray.400"),
         color: "white"
@@ -41,11 +37,11 @@ const Conversation = ({ conversation }) => {
             base: "xs",
             sm: "sm",
             md: "md"
-        }} name={receiver?.username} src={receiver?.profilePic}>
+        }} name={conversation?.username} src={conversation?.profilePic}>
             <AvatarBadge boxSize={"1em"} bg={"green.500"} />
         </Avatar>
         <Flex flexDirection={"column"}>
-            <Text fontWeight={700} display={"flex"} alignItems={"center"}>{receiver?.username}</Text>
+            <Text fontWeight={700} display={"flex"} alignItems={"center"}>{conversation?.username}</Text>
             <Text fontSize={"xs"} display={"flex"} alignItems={"center"} gap={1}>{conversation?.lastMessage.text}</Text>
         </Flex>
     </Flex>

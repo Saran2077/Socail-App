@@ -66,7 +66,10 @@ const getConversations = async(req, res) => {
     try {
         const userId = req.user._id 
 
-        const conversations = await Conversation.find({ participants: { $elemMatch: {$eq: userId}} })
+        const conversations = await Conversation.find({ participants: userId }).populate({
+            path: "participants",
+            select: "username profilePic"
+        })
         res.status(200).json(conversations)
         
     } catch (error) {
